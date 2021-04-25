@@ -39,5 +39,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Update Maven settings.xml
         run: cp -pr settings.xml ~/.m2
-      - name: Build and analyze
+      - name: Sonar analysis
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      - name: Maven build
+        run: mvn clean package 
