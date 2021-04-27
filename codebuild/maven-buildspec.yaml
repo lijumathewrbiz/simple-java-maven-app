@@ -1,0 +1,15 @@
+version: 0.2
+
+env: 
+  secrets-manager: 
+    JFROG_USERNAME: "shared/jfrog/credentials:JFROG_USERNAME" 
+    JFROG_TOKEN: "shared/jfrog/credentials:JFROG_TOKEN"
+
+phases:
+  pre_build:
+    commands:
+      - cp -pr jfrog/settings.xml ~/.m2/settings.xml
+      
+  build:
+    commands:
+      - mvn package
