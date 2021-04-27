@@ -4,7 +4,6 @@ env:
   secrets-manager: 
     SONAR_TOKEN: "shared/sonarcloud/credentials:SONAR_TOKEN" 
 
-
 phases:
   build:
     commands:
