@@ -20,14 +20,8 @@ phases:
       - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   post_build:
     commands:
-      - echo "Waiting for SonarCloud Analysis Status"
+      - echo "Checking SonarCloud Analysis Status"
       - sleep 10
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONAR_CLOUD_PROJECT_KEY >result.json
-      - cat result.json
-      - echo "results below"
       - echo $(jq -r '.projectStatus.status' result.json)
-      #- if [ $(jq -r '.projectStatus.status' result.json) == ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
-      #- echo $CODEBUILD_BUILD_SUCCEEDING
-      #- if [ $(cat result.json | jq -r '.projectStatus.status') = "ERROR" ]; then export CODEBUILD_BUILD_SUCCEEDING=0; fi
-      #- echo $CODEBUILD_BUILD_SUCCEEDING
       - if [ $(cat result.json | jq -r '.projectStatus.status') = "ERROR" ]; then exit 255; fi
