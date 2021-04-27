@@ -7,6 +7,9 @@ env:
     SONAR_TOKEN: "shared/sonarcloud/credentials:SONAR_TOKEN" 
 
 phases:
+  install:
+    commands:
+       - yum install jq -y
   build:
     commands:
       - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
@@ -14,4 +17,6 @@ phases:
       - sleep 10
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONAR_CLOUD_PROJECT_KEY >result.json
       - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - echo "results below"
+      - echo $(jq -r '.projectStatus.status' result.json)
+      # - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
