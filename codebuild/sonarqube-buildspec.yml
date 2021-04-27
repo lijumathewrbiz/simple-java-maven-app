@@ -26,4 +26,4 @@ phases:
       - echo "results below"
       - echo $(jq -r '.projectStatus.status' result.json)
       - echo $CODEBUILD_BUILD_SUCCEEDING
-      - if [ $(jq -r '.projectStatus.status' result.json) == ERROR ] ; then export CODEBUILD_BUILD_SUCCEEDING=0 ;fi
+      - if [ $(jq -r '.projectStatus.status' result.json) == OK ] ; then export CODEBUILD_BUILD_SUCCEEDING=0 ;fi
