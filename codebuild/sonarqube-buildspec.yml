@@ -4,9 +4,18 @@ env:
   variables:
     SONAR_CLOUD_PROJECT_KEY: "lijumathewrbiz_simple-java-maven-app"
   secrets-manager: 
-    SONAR_TOKEN: "shared/sonarcloud/credentials:SONAR_TOKEN" 
+    JFROG_USERNAME: "shared/jfrog/credentials:JFROG_USERNAME" 
+    JFROG_TOKEN: "shared/jfrog/credentials:JFROG_TOKEN"
+    SONAR_TOKEN: "shared/sonarcloud/credentials:SONAR_TOKEN"
 
 phases:
+  install:
+    commands:
+       - yum install jq -y
+       
+  pre_build:
+    commands:
+      - cp -pr jfrog/settings.xml ~/.m2/settings.xml
   build:
     commands:
       - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
@@ -14,4 +23,7 @@ phases:
       - sleep 10
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONAR_CLOUD_PROJECT_KEY >result.json
       - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - echo "results below"
+      - echo $(jq -r '.projectStatus.status' result.json)
+      - if [ $(jq -r '.projectStatus.status' result.json) == ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - echo $CODEBUILD_BUILD_SUCCEEDING
