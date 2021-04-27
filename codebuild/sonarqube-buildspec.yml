@@ -1,6 +1,8 @@
 version: 0.2
 
 env: 
+  variables:
+    SONAR_CLOUD_PROJECT_KEY: "lijumathewrbiz_simple-java-maven-app"
   secrets-manager: 
     SONAR_TOKEN: "shared/sonarcloud/credentials:SONAR_TOKEN" 
 
@@ -8,3 +10,8 @@ phases:
   build:
     commands:
       - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      - echo "Checking SonarCloud Analysis Status"
+      - sleep 10
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONAR_CLOUD_PROJECT_KEY >result.json
+      - cat result.json
+      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
