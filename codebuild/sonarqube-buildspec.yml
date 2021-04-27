@@ -10,6 +10,10 @@ phases:
   install:
     commands:
        - yum install jq -y
+       
+  pre_build:
+    commands:
+      - cp -pr jfrog/settings.xml ~/.m2/settings.xml
   build:
     commands:
       - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
@@ -19,4 +23,4 @@ phases:
       - cat result.json
       - echo "results below"
       - echo $(jq -r '.projectStatus.status' result.json)
-      # - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - if [ $(jq -r '.projectStatus.status' result.json) == ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
